@@ -2,10 +2,12 @@ import { CocktailService } from './../../services/cocktail.service';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IFilter } from '../../models/filter.modeel';
+import { ICocktail } from '../../models/cocktail.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-list-coktails',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './list-coktails.component.html',
   styleUrl: './list-coktails.component.scss',
 })
@@ -20,6 +22,22 @@ export class ListCoktailsComponent {
     serán almacenados en una lista para mostrarlos en `list-coktails.component.html`. */
   private CocktailService = inject(CocktailService);
 
+  /** Lista donde se almacenarán los cócteles obtenidos de la API.
+    🔹 Se usa en `list-coktails.component.html` para mostrar los resultados dinámicamente.  */
+  public ListCoktails: ICocktail[] = [];
+
+  /** Variable que indica si el usuario ha realizado una búsqueda.
+  - Se inicializa en `false` para mostrar el mensaje de bienvenida.
+  - Se cambia a `true` cuando el usuario envía un filtro.
+  - Se usa en `list-coktails.component.html` para mostrar mensajes dinámicos.*/
+  public searched: boolean = false;
+
+  /** Variable que controla la visibilidad del spinner de carga.
+  - Se inicializa en `true` para mostrar el loader por defecto.
+  - Se cambia a `false` al iniciar la búsqueda y vuelve a `true` al finalizar.
+  - Se usa en `list-coktails.component.html` para mostrar un indicador de carga.*/
+  public loadCocktails: boolean = true;
+
   /** Objeto que almacena los criterios de filtrado seleccionados por el usuario.
 
     - `searchBy`: Define el criterio de búsqueda (nombre, vaso, ingrediente o categoría).
@@ -33,22 +51,25 @@ export class ListCoktailsComponent {
     value: '', // Valor ingresado por el usuario
   };
 
-  /** Método que se ejecuta cuando el usuario envía el formulario de filtrado.
+  /* * Método que se ejecuta cuando el usuario envía el formulario de filtrado.
 
-    - Es llamado desde `(ngSubmit)="filterData()"` en el `<form>`.
-    - Envía los valores de `filter` al servicio `CocktailService.getCocktails()`.
-    - Recibe los resultados y los imprime en la consola.*/
-
+  - Es llamado desde `(ngSubmit)="filterData()"` en el `<form>`.
+  - Envía los valores de `filter` al servicio `CocktailService.getCocktails()`.
+  - Recibe los datos procesados y los almacena en `cocktails` para mostrarlos en la interfaz. */
   filterData() {
     console.log(this.filter); // Muestra los valores ingresados en el formulario
+    this.searched = true; // Indica que se realizó una búsqueda
+    this.loadCocktails = false; // Muestra el spinner de carga
     this.CocktailService.getCocktails(this.filter).subscribe({
-      next: (data: any) => {
-        console.log(data); // Imprime la respuesta de la API en la consola
+      next: (ListCoktails: ICocktail[]) => {
+        this.ListCoktails = ListCoktails; // Guarda los datos en la lista para mostrarlos en el HTML
       },
       error: (error) => {
         console.error(error); // Muestra el error en caso de fallo en la petición
       },
-      complete: () => {},
+      complete: () => {
+        this.loadCocktails = true; // Oculta el spinner cuando se completa la carga
+      },
     });
   }
 }

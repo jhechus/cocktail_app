@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { IFilter } from '../models/filter.modeel';
 import { first, map } from 'rxjs';
+import { ICocktail } from '../models/cocktail.model';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +48,45 @@ export class CocktailService {
     - `map(data => data)` transforma la respuesta antes de enviarla al componente. */
     return this.http.get(this.URL_BASE + additionalUrl).pipe(
       first(),
-      map((data: any) => data)
+      map((data: any) => this.parseDrinks(data))
     );
+  }
+
+  /** Procesa los datos de la API y extrae solo la información relevante.
+
+  - `data['drinks']`: Extrae la lista de cócteles desde la API.
+  - Se mapea cada objeto `drink` para extraer solo los campos requeridos.
+  - Se utiliza `parseArray()` para obtener ingredientes y medidas correctamente.
+
+  🔹 Este método filtra los datos antes de enviarlos al componente. */
+  private parseDrinks(data: any) {
+    if (!data) {
+      return [];
+    }
+    const drinks = data['drinks'] as any[];
+    return drinks.map((drink) => {
+      return {
+        id: drink['idDrink'],
+        name: drink['strDrink'],
+        glass: drink['srtGlass'],
+        img: drink['strDrinkThumb'],
+        instructions: drink['strInstructionsES'] || drink['strInstructions'],
+        ingredients: this.parseArray(drink, 'strIngredient'),
+        measures: this.parseArray(drink, 'strMeasure'),
+      } as ICocktail;
+    });
+  }
+
+  /** Extrae una lista de ingredientes o medidas desde la estructura de la API.
+
+  - `Object.keys(drink)`: Obtiene todas las claves del objeto `drink`.
+  - `filter(key => key.startsWith(property))`: Filtra las claves que inician con `strIngredient` o `strMeasure`.
+  - `map(key => drink[key] as string)`: Obtiene el valor correspondiente.
+
+  🔹 Se usa en `parseDrinks()` para obtener ingredientes y medidas antes de enviarlos al componente. */
+  private parseArray(drink: any, property: string): string[] {
+    return Object.keys(drink)
+      .filter((key) => key.startsWith(property) && drink[key])
+      .map((key) => drink[key] as string);
   }
 }
