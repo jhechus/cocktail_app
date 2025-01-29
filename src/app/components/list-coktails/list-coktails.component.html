@@ -54,7 +54,8 @@
         🔹 Muestra las tarjetas de cócteles cuando los datos han sido cargados (`loadCocktails = true`).
         🔹 Si la lista está vacía, se mostrarán los mensajes de "No hay resultados" o "Bienvenido".
       -->
-      @if (loadCocktails) { @for (cocktail of ListCoktails; track cocktail.id) {
+      @if (loadCocktails) { @for (cocktail of ListCoktails | paginate: {
+      itemsPerPage, currentPage}; track cocktail.id) {
       <div class="col-lg-3 col-md-4 col-sm-6 col-12 mt-4 mb-4">
         <div class="card">
           <img
@@ -92,5 +93,19 @@
 
       }
     </div>
+
+    <!-- Componente de paginación -->
+    <!-- 🔹 Se muestra solo si la cantidad de cócteles supera los elementos por página -->
+    @if ( ListCoktails.length > itemsPerPage) {
+    <div class="row">
+      <div class="col-12 text-center">
+        <pagination-controls
+          previousLabel="Anterior"
+          nextLabel="Siguiente"
+          (pageChange)="pageChange($event)"
+        />
+      </div>
+    </div>
+    }
   </div>
 </div>

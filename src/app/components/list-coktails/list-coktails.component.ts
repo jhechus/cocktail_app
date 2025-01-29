@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { IFilter } from '../../models/filter.modeel';
 import { ICocktail } from '../../models/cocktail.model';
 import { RouterLink } from '@angular/router';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-list-coktails',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, NgxPaginationModule],
   templateUrl: './list-coktails.component.html',
   styleUrl: './list-coktails.component.scss',
 })
@@ -37,6 +38,17 @@ export class ListCoktailsComponent {
   - Se cambia a `false` al iniciar la búsqueda y vuelve a `true` al finalizar.
   - Se usa en `list-coktails.component.html` para mostrar un indicador de carga.*/
   public loadCocktails: boolean = true;
+
+  /**  Variable que almacena la página actual en la paginación.
+  - Se inicializa en `1` para empezar desde la primera página.
+  - Se actualiza dinámicamente cuando el usuario cambia de página.
+  - Se usa en `list-coktails.component.html` dentro del componente de paginación.
+
+  Cantidad de elementos que se mostrarán por página.
+  - Se inicializa en `12`, pero puede modificarse según necesidades.
+  - Se usa en `list-coktails.component.html` para calcular si se muestra la paginación. */
+  public currentPage = 1;
+  public itemsPerPage = 12;
 
   /** Objeto que almacena los criterios de filtrado seleccionados por el usuario.
 
@@ -71,5 +83,13 @@ export class ListCoktailsComponent {
         this.loadCocktails = true; // Oculta el spinner cuando se completa la carga
       },
     });
+  }
+
+  /** Método que se ejecuta cuando el usuario cambia de página en la paginación.
+    - Recibe el número de la nueva página como parámetro.
+    - Actualiza `currentPage` con el nuevo valor.
+    - Se enlaza en `list-coktails.component.html` al evento `(pageChange)`. */
+  pageChange(page: number) {
+    this.currentPage = page;
   }
 }
