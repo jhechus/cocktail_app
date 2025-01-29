@@ -64,6 +64,9 @@ export class CocktailService {
       return [];
     }
     const drinks = data['drinks'] as any[];
+    if (!drinks) {
+      return []; // Si no hay un id no muestra nada
+    }
     return drinks.map((drink) => {
       return {
         id: drink['idDrink'],
@@ -88,5 +91,21 @@ export class CocktailService {
     return Object.keys(drink)
       .filter((key) => key.startsWith(property) && drink[key])
       .map((key) => drink[key] as string);
+  }
+
+  getCocktailbyId(id: string) {
+    /**  Construye la URL con el ID del cóctel para la petición a la API.
+    - Se usa `lookup.php?i=` para buscar un cóctel específico por su ID. */
+    const additionalUrl = `lookup.php?i=${id}`;
+    return this.http.get(this.URL_BASE + additionalUrl).pipe(
+      first(),
+      map((data: any) => {
+        /**  Extrae la lista de cócteles de la respuesta de la API.
+        - `data['drinks']` contiene la lista de resultados.
+        - Si `drinks` es `null`, retorna `undefined` para manejar el caso de cóctel no encontrado. */
+        const listCocktails = this.parseDrinks(data);
+        return listCocktails[0];
+      })
+    );
   }
 }

@@ -1,6 +1,8 @@
+import { CocktailService } from './../../services/cocktail.service';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { first } from 'rxjs';
+import { ICocktail } from '../../models/cocktail.model';
 
 @Component({
   selector: 'app-details-coktails',
@@ -15,6 +17,16 @@ export class DetailsCoktailsComponent {
     - Permite capturar el parámetro `id` que identifica el cóctel seleccionado.*/
   private activateRoute = inject(ActivatedRoute);
 
+  /** Inyección del servicio `CocktailService` para obtener los datos del cóctel.
+    - `CocktailService` proviene de `src/app/services/cocktail.service.ts`.
+    - Se usa para realizar la petición a la API y obtener los detalles del cóctel. */
+  private cocktailService = inject(CocktailService);
+
+  /** Variable donde se almacenará el cóctel obtenido de la API.
+    - Se usa en `details-coktails.component.html` para mostrar los detalles.
+    - Si no se encuentra el cóctel, quedará `undefined`.*/
+  public cocktail!: ICocktail;
+
   ngOnInit() {
     /** Suscripción a los parámetros de la URL.
 
@@ -27,6 +39,14 @@ export class DetailsCoktailsComponent {
       next: (params: Params) => {
         const id = params['id']; // Extrae el ID de la URL
         console.log(id); // Muestra el ID en la consola (para prueba
+
+        // Si hay un ID, busca el cóctel en la API
+        this.cocktailService.getCocktailbyId(id).subscribe({
+          next: (cocktail: ICocktail) => {
+            this.cocktail = cocktail; // Almacena el cóctel obtenido
+            console.log(cocktail);
+          },
+        });
       },
     });
   }
