@@ -78,6 +78,7 @@ export class ListCoktailsComponent {
       },
       error: (error) => {
         console.error(error); // Muestra el error en caso de fallo en la petición
+        this.loadCocktails = true; // Oculta el spinner cuando haya error
       },
       complete: () => {
         this.loadCocktails = true; // Oculta el spinner cuando se completa la carga

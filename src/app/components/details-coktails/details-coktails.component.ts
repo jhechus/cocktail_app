@@ -1,12 +1,12 @@
 import { CocktailService } from './../../services/cocktail.service';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { first, switchMap } from 'rxjs';
 import { ICocktail } from '../../models/cocktail.model';
 
 @Component({
   selector: 'app-details-coktails',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './details-coktails.component.html',
   styleUrl: './details-coktails.component.scss',
 })
@@ -53,6 +53,9 @@ export class DetailsCoktailsComponent {
         next: (cocktail: ICocktail) => {
           this.cocktail = cocktail; // Almacena el cóctel obtenido.
           console.log(cocktail); // Muestra los datos en la consola (para depuración).
+        },
+        error: () => {
+          this.loadCocktail = true; // Oculta el spinner en caso de error
         },
         complete: () => {
           this.loadCocktail = true; // Oculta el spinner cuando la carga termina.

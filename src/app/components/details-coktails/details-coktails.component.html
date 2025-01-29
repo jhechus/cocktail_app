@@ -1,8 +1,70 @@
-<div class="row">
+<div class="row mt-4 mb-4">
   <!-- Verifica si los detalles del cóctel ya cargaron -->
   @if (loadCocktail) {
   <!-- Aquí se mostrarán los detalles del cóctel cuando estén disponibles -->
-  } @else {
+  @if (cocktail) {
+  <div class="col-12">
+    <!-- Nombre del cóctel -->
+    <div class="row mb-4">
+      <div class="col-12 text-center">
+        <span class="h1"> {{ cocktail.name }}</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="offset-md-3 col-md-3 col-12">
+        <!-- Imagen del cóctel -->
+        <img
+          [src]="cocktail.img"
+          class="img-fluid rounded"
+          [alt]="cocktail.name"
+        />
+        <!-- Botón para volver a la lista -->
+        <button class="btn btn-primary mt-4" routerLink="list-cocktails">
+          <i class="bi bi-arrow-left me-2"></i> Volver
+        </button>
+      </div>
+
+      <!-- Sección de instrucciones -->
+      <div class="col-md-4 col-12">
+        @if (cocktail.instructions) {
+        <div class="row">
+          <div class="col-12">
+            <span class="h3"> instrucciones: </span>
+            <span class="d-block"> {{ cocktail.instructions }} </span>
+          </div>
+        </div>
+        <!-- Sección de ingredientes -->
+        } @if (cocktail.ingredients.length > 0) {
+        <div class="row">
+          <div class="col-12">
+            <span class="h3"> ingredientes: </span>
+            <ul class="list-unstyled">
+              @for (ingredient of cocktail.ingredients; track ingredient; let
+              index = $index) {
+              <li>
+                {{ ingredient }}
+                @if (cocktail.measures[index]) {
+                {{ cocktail.measures[index] }}
+                }
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  }@else {
+  <!-- Muestra un mensaje de error si no se encuentra el cóctel -->
+  <div class="col-12 text-center">
+    <span class="d-block mb-4"> Este cocktel no existe </span>
+    <button class="btn btn-primary" routerLink="list-cocktails">
+      <i class="bi bi-arrow-left me-2"></i> Volver
+    </button>
+  </div>
+  } } @else {
   <!-- Muestra un spinner mientras se carga la información -->
   <div class="col-12 text-center p-5">
     <div class="spinner-border" role="status">
