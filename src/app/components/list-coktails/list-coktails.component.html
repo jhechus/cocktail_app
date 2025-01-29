@@ -2,7 +2,50 @@
   <div class="col-12">
     <div class="row">
       <div class="col-12">
-        <form (ngSubmit)="filterData()" action=""></form>
+        <!-- Formulario de filtrado -->
+        <form (ngSubmit)="filterData()" action="">
+          <div class="row">
+            <!-- Selección de criterio de búsqueda -->
+            <div class="col-4">
+              <label for="search" class="form-label"> Buscar por </label>
+              <select
+                name="search"
+                id="search"
+                class="form-control"
+                [(ngModel)]="filter.searchBy"
+              >
+                <option value="name">Nombre</option>
+                <option value="glass">Vaso</option>
+                <option value="ingredient">Ingredienet</option>
+                <option value="category">Categoria</option>
+              </select>
+            </div>
+
+            <!-- Campo de entrada para el valor de búsqueda -->
+            <div class="col-4">
+              <label for="value" class="form-label">
+                <!-- Evalúa el valor de `filter.searchBy` y muestra el texto correspondiente. -->
+                @switch (filter.searchBy) { @case ('name') { nombre } @case
+                ('glass') { vaso } @case ('ingredient') { ingrediente } @case
+                ('category') { categoria } }
+              </label>
+              <input
+                type="text"
+                name="value"
+                class="form-control"
+                id="value"
+                [(ngModel)]="filter.value"
+              />
+            </div>
+
+            <!-- Botón de filtrado -->
+            <div class="col-4 align-self-end">
+              <button class="btn btn-primary w-100" type="submit">
+                <i class="bi bi-search me-2"></i>Filtrar
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
